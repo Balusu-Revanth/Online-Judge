@@ -20,7 +20,12 @@ const SignIn = () => {
     }),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+        const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+        const idToken = await userCredential.user.getIdToken();
+
+        // Send ID token to your backend
+        await verifyUserOnBackend(idToken);
+
         navigate('/home');
       } catch (error) {
         const errorMessage = generateFirebaseAuthErrorMessage(error);
@@ -32,11 +37,33 @@ const SignIn = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      await verifyUserOnBackend(idToken);
+
       navigate('/home');
     } catch (error) {
       const errorMessage = generateFirebaseAuthErrorMessage(error);
       formik.setErrors({ submit: errorMessage });
+    }
+  };
+
+  const verifyUserOnBackend = async (idToken) => {
+    try {
+      const response = await fetch('http://localhost:8000/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to verify user on backend');
+      }
+    } catch (error) {
+      console.error('Error verifying user on backend:', error);
+      formik.setErrors({ submit: 'Failed to verify user on backend' });
     }
   };
 

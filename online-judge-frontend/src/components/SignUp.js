@@ -28,7 +28,14 @@ const SignUp = () => {
     }),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        await createUserWithEmailAndPassword(auth, values.email, values.password);
+        const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        const idToken = await userCredential.user.getIdToken();
+        console.log('idToken:', idToken);
+        await registerUserOnBackend(idToken, {
+          firstName: values.firstName,
+          lastName: values.lastName
+        });
+
         navigate('/home');
       } catch (error) {
         const errorMessage = generateFirebaseAuthErrorMessage(error);
@@ -40,11 +47,37 @@ const SignUp = () => {
 
   const handleGoogleSignUp = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      await registerUserOnBackend(idToken, {
+        firstName: result.user.displayName.split(' ')[0],
+        lastName: result.user.displayName.split(' ')[1]
+      });
+
       navigate('/home');
     } catch (error) {
       const errorMessage = generateFirebaseAuthErrorMessage(error);
       formik.setErrors({ submit: errorMessage });
+    }
+  };
+
+  const registerUserOnBackend = async (idToken, userDetails) => {
+    try {
+      const response = await fetch('http://localhost:8000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify(userDetails)
+      });
+      if (!response.ok) {
+        throw new Error('Failed to register user on backend');
+      }
+    } catch (error) {
+      console.error('Error registering user on backend:', error);
+      formik.setErrors({ submit: 'Failed to register user on backend' });
     }
   };
 
@@ -128,6 +161,7 @@ const SignUp = () => {
         <button type="submit" disabled={formik.isSubmitting}>Sign Up</button>
       </form>
       <button onClick={handleGoogleSignUp}>Sign Up with Google</button>
+      <button onClick={() => navigate('/signin')}>Already have an account? Sign In</button>
     </div>
   );
 };
