@@ -5,9 +5,11 @@ import { auth, googleProvider } from '../config/firebase';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
+import { useAuth } from '../context/AuthContext';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const { setAdmin } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -30,10 +32,11 @@ const SignUp = () => {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const idToken = await userCredential.user.getIdToken();
-        console.log('idToken:', idToken);
+
         await registerUserOnBackend(idToken, {
           firstName: values.firstName,
-          lastName: values.lastName
+          lastName: values.lastName,
+          email: values.email,
         });
 
         navigate('/home');
@@ -52,7 +55,8 @@ const SignUp = () => {
 
       await registerUserOnBackend(idToken, {
         firstName: result.user.displayName.split(' ')[0],
-        lastName: result.user.displayName.split(' ')[1]
+        lastName: result.user.displayName.split(' ')[1],
+        email: result.user.email,
       });
 
       navigate('/home');
@@ -74,6 +78,19 @@ const SignUp = () => {
       });
       if (!response.ok) {
         throw new Error('Failed to register user on backend');
+      }
+
+      const adminResponse = await fetch('http://localhost:8000/auth/check-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: userDetails.email })
+      });
+
+      if (adminResponse.ok) {
+        const { isAdmin } = await adminResponse.json();
+        setAdmin(isAdmin);
       }
     } catch (error) {
       console.error('Error registering user on backend:', error);

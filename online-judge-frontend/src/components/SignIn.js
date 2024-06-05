@@ -5,9 +5,11 @@ import { auth, googleProvider } from '../config/firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
+import { useAuth } from '../context/AuthContext';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const { setAdmin } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -23,8 +25,7 @@ const SignIn = () => {
         const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
         const idToken = await userCredential.user.getIdToken();
 
-        // Send ID token to your backend
-        await verifyUserOnBackend(idToken);
+        await verifyUserOnBackend(idToken, userCredential.user.email);
 
         navigate('/home');
       } catch (error) {
@@ -40,7 +41,7 @@ const SignIn = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
-      await verifyUserOnBackend(idToken);
+      await verifyUserOnBackend(idToken, result.user.email);
 
       navigate('/home');
     } catch (error) {
@@ -49,7 +50,7 @@ const SignIn = () => {
     }
   };
 
-  const verifyUserOnBackend = async (idToken) => {
+  const verifyUserOnBackend = async (idToken, email) => {
     try {
       const response = await fetch('http://localhost:8000/auth/signin', {
         method: 'POST',
@@ -60,6 +61,19 @@ const SignIn = () => {
       });
       if (!response.ok) {
         throw new Error('Failed to verify user on backend');
+      }
+
+      const adminResponse = await fetch('http://localhost:8000/auth/check-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      if (adminResponse.ok) {
+        const { isAdmin } = await adminResponse.json();
+        setAdmin(isAdmin);
       }
     } catch (error) {
       console.error('Error verifying user on backend:', error);
