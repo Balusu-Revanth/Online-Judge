@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { DBConnection } = require("./configs/db");
 const authRoutes = require('./routes/auth');
+const problemRoutes = require('./routes/problem');
 const admin = require('firebase-admin');
 const serviceAccountPath = process.env.SERVICE_ACCOUNT_KEY_PATH;
 const serviceAccount = require(serviceAccountPath);
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/problems', problemRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
