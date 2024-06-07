@@ -2,7 +2,7 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { auth, googleProvider } from '../config/firebase';
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +32,7 @@ const SignUp = () => {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const idToken = await userCredential.user.getIdToken();
+        await sendEmailVerification(userCredential.user);
 
         await registerUserOnBackend(idToken, {
           firstName: values.firstName,
@@ -39,7 +40,10 @@ const SignUp = () => {
           email: values.email,
         });
 
-        navigate('/home');
+        await auth.signOut();
+        navigate('/signin');
+
+        alert('A verification email has been sent to your email address. Please verify your email before logging in.');
       } catch (error) {
         const errorMessage = generateFirebaseAuthErrorMessage(error);
         setErrors({ submit: errorMessage });
@@ -72,25 +76,16 @@ const SignUp = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': idToken
         },
         body: JSON.stringify(userDetails)
       });
       if (!response.ok) {
+        await auth.signOut();
         throw new Error('Failed to register user on backend');
-      }
-
-      const adminResponse = await fetch('http://localhost:8000/auth/check-admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: userDetails.email })
-      });
-
-      if (adminResponse.ok) {
-        const { isAdmin } = await adminResponse.json();
-        setAdmin(isAdmin);
+      } else {
+        const user = await response.json();
+        setAdmin(user.isAdmin);
       }
     } catch (error) {
       console.error('Error registering user on backend:', error);
@@ -139,6 +134,7 @@ const SignUp = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.email}
+            autoComplete="email"
           />
           {formik.touched.email && formik.errors.email ? (
             <div style={{ color: 'red' }}>{formik.errors.email}</div>
@@ -153,6 +149,7 @@ const SignUp = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.password}
+            autoComplete="new-password"
           />
           {formik.touched.password && formik.errors.password ? (
             <div style={{ color: 'red' }}>{formik.errors.password}</div>
@@ -167,6 +164,7 @@ const SignUp = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.confirmPassword}
+            autoComplete="new-password"
           />
           {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
             <div style={{ color: 'red' }}>{formik.errors.confirmPassword}</div>

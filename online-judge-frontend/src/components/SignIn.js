@@ -56,24 +56,15 @@ const SignIn = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': idToken
         }
       });
       if (!response.ok) {
+        await auth.signOut();
         throw new Error('Failed to verify user on backend');
-      }
-
-      const adminResponse = await fetch('http://localhost:8000/auth/check-admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email })
-      });
-
-      if (adminResponse.ok) {
-        const { isAdmin } = await adminResponse.json();
-        setAdmin(isAdmin);
+      } else {
+        const user = await response.json();
+        setAdmin(user.isAdmin);
       }
     } catch (error) {
       console.error('Error verifying user on backend:', error);
@@ -94,6 +85,7 @@ const SignIn = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.email}
+            autoComplete='email'
           />
           {formik.touched.email && formik.errors.email ? (
             <div style={{ color: 'red' }}>{formik.errors.email}</div>

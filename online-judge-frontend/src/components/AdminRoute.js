@@ -6,22 +6,10 @@ const AdminRoute = ({ component: Component }) => {
   const { user, loading, error, admin } = useAuth();
   const location = useLocation();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!user) {
-    return <Navigate to="/signin" state={{ from: location }} />;
-  }
-
-  if (!admin) {
-    return <div>Access Denied</div>;
-  }
-
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!user || !admin) return <Navigate to="/signin" state={{ from: location }} />;
+  
   return <Component />;
 };
 

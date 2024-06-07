@@ -3,7 +3,10 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Home from './components/Home';
 import Account from './components/Account';
+import AddProblem from './components/AddProblem';
+import ProblemDetail from './components/ProblemDetail';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 
 function AppRouter() {
   return (
@@ -13,6 +16,8 @@ function AppRouter() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/home" element={<ProtectedRoute component={Home} />} />
         <Route path="/account" element={<ProtectedRoute component={Account} />} />
+        <Route path="/add-problem" element={<AdminRoute component={AddProblem} />} />
+        <Route path="/problems/:id" element={<ProtectedRoute component={ProblemDetail} />} />
         <Route path="/" element={<ProtectedRoute component={Home} />} />
       </Routes>
     </Router>
