@@ -1,21 +1,22 @@
-const admin = require('firebase-admin');
 const User = require('../../models/User');
 
-const signUp = async (req, res) => {
-    const { firstName, lastName } = req.body;
+const signInOrSignUp = async (req, res) => {
     const { uid, email } = req.user;
+    const { firstName, lastName } = req.body;
 
     try {
-        const newUser = new User({ uid, firstName, lastName, email });
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
-    } catch (error) {
-        if (error.code === 11000) {
-            res.status(409).json({ error: 'A user with the given email or UID already exists.' });
+        let user = await User.findOne({ uid });
+
+        if (user) {
+            res.status(200).json(user);
         } else {
-            res.status(400).json({ error: error.message });
+            user = new User({ uid, firstName, lastName, email });
+            const savedUser = await user.save();
+            res.status(201).json(savedUser);
         }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };
 
-module.exports = signUp;
+module.exports = signInOrSignUp;

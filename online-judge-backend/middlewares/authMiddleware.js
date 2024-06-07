@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 
 const verifyFirebaseToken = async (req, res, next) => {
-    const idToken = req.headers.authorization?.split('Bearer ')[1];
+    const idToken = req.headers.authorization;
     if (!idToken) {
         return res.status(401).send('Unauthorized: No ID token provided');
     }
