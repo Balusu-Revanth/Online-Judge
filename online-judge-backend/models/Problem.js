@@ -7,6 +7,11 @@ const problemSchema = new Schema({
         required: true,
         unique: true
     },
+    problem_id: {
+        type: String,
+        required: true,
+        unique: true
+    },
     description: {
         type: String,
         required: true
@@ -34,6 +39,16 @@ const problemSchema = new Schema({
     },
     tags: [{
         type: String
+    }],
+    testCases: [{
+        input: {
+            type: String,
+            required: true
+        },
+        output: {
+            type: String,
+            required: true
+        }
     }]
 }, {
     timestamps: true

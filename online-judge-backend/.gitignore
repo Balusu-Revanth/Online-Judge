@@ -6,3 +6,6 @@
 
 # Firebase service account key
 configs/serviceAccountKey.json
+
+# Data
+data/
