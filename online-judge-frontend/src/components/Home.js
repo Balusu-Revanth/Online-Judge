@@ -57,7 +57,7 @@ const Home = () => {
       <h3>Problem List</h3>
       <ul>
         {problems.map(problem => (
-          <li key={problem._id} onClick={() => handleProblemClick(problem._id)}>
+          <li key={problem.problem_id} onClick={() => handleProblemClick(problem.problem_id)}>
             <h4>{problem.title}</h4>
             <p><strong>Difficulty:</strong> {problem.difficulty}</p>
             <p><strong>Tags:</strong> {problem.tags.join(', ')}</p>
