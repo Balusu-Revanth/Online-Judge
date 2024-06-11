@@ -2,15 +2,12 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { auth, googleProvider } from '../config/firebase';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, deleteUser } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
-import { useAuth } from '../context/AuthContext';
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { setAdmin } = useAuth();
-
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -41,8 +38,20 @@ const SignIn = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
+      const response = await fetch('http://localhost:8000/user/get-user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': idToken
+        }
+      });
+      if (!response.ok) {
+        await deleteUser(result.user);
+        alert('User does not exist. Please sign up first.');
+        navigate('/signup');
+        return;
+      }
       await verifyUserOnBackend(idToken, result.user.email);
-
       navigate('/home');
     } catch (error) {
       const errorMessage = generateFirebaseAuthErrorMessage(error);
@@ -62,9 +71,6 @@ const SignIn = () => {
       if (!response.ok) {
         await auth.signOut();
         throw new Error('Failed to verify user on backend');
-      } else {
-        const user = await response.json();
-        setAdmin(user.isAdmin);
       }
     } catch (error) {
       console.error('Error verifying user on backend:', error);

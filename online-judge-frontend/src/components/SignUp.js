@@ -4,12 +4,12 @@ import * as Yup from 'yup';
 import { auth, googleProvider } from '../config/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; 
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
-import { useAuth } from '../context/AuthContext';
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { setAdmin } = useAuth();
+  const { setIsNewUser } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -30,6 +30,8 @@ const SignUp = () => {
     }),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
+        setIsNewUser(true);
+
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const idToken = await userCredential.user.getIdToken();
         await sendEmailVerification(userCredential.user);
@@ -39,6 +41,8 @@ const SignUp = () => {
           lastName: values.lastName,
           email: values.email,
         });
+
+        setIsNewUser(false);
 
         await auth.signOut();
         navigate('/signin');
@@ -54,14 +58,32 @@ const SignUp = () => {
 
   const handleGoogleSignUp = async () => {
     try {
+      setIsNewUser(true);
+
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
+
+      const response = await fetch('http://localhost:8000/user/get-user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': idToken
+        }
+      });
+      if (response.ok) {
+        await auth.signOut();
+        alert('User already exists. Please sign in.');
+        navigate('/signin');
+        return;
+      }
 
       await registerUserOnBackend(idToken, {
         firstName: result.user.displayName.split(' ')[0],
         lastName: result.user.displayName.split(' ')[1],
         email: result.user.email,
       });
+
+      setIsNewUser(false);
 
       navigate('/home');
     } catch (error) {
@@ -83,9 +105,6 @@ const SignUp = () => {
       if (!response.ok) {
         await auth.signOut();
         throw new Error('Failed to register user on backend');
-      } else {
-        const user = await response.json();
-        setAdmin(user.isAdmin);
       }
     } catch (error) {
       console.error('Error registering user on backend:', error);

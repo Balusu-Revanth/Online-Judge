@@ -1,8 +1,8 @@
 import React from 'react';
 import { auth } from '../config/firebase';
-import { deleteUser, sendPasswordResetEmail, signOut } from 'firebase/auth';
+import { deleteUser, sendPasswordResetEmail, signOut, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from '../context/AuthContext';
 
 const Account = () => {
   const navigate = useNavigate();
@@ -13,8 +13,17 @@ const Account = () => {
     if (confirmDeletion) {
       try {
         const user = auth.currentUser;
+        if (user) {
+          const password = prompt("Please enter your password to confirm deletion:");
+          if (!password) {
+            alert('Password is required for re-authentication.');
+            return;
+          }
+          
+          const credential = EmailAuthProvider.credential(user.email, password);
+          await reauthenticateWithCredential(user, credential);
 
-          const response = await fetch('http://localhost:8000/auth/delete-user', {
+          const response = await fetch('http://localhost:8000/user/delete-user', {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -22,13 +31,11 @@ const Account = () => {
             }
           });
 
-        if (user) {
-          await deleteUser(user);
-          
           if (!response.ok) {
             throw new Error('Failed to delete user data from backend.');
           }
 
+          await deleteUser(user);
           alert('Account deleted successfully.');
           navigate('/signup');
         }
