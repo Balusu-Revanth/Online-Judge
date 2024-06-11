@@ -8,12 +8,10 @@ if (!fs.existsSync(dirInputs)) {
   fs.mkdirSync(dirInputs, { recursive: true });
 }
 
-const generateInputFile = async (testCase) => {
+const generateInputFile = async (input) => {
   const jobId = uuidv4();
-  console.log(jobId);
   const inputPath = path.join(dirInputs, `${jobId}.txt`);
-  console.log(inputPath);
-  fs.writeFileSync(inputPath, testCase.input);
+  fs.writeFileSync(inputPath, input);
   return inputPath;
 };
 

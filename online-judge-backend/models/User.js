@@ -23,7 +23,11 @@ const userSchema = new Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    }
+    },
+    solvedProblems: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Problem'
+    }],
 }, {
     timestamps: true
 });

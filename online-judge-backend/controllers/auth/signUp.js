@@ -1,22 +1,20 @@
 const User = require('../../models/User');
 
-const signInOrSignUp = async (req, res) => {
-    const { uid, email } = req.user;
+const signUp = async (req, res) => {
     const { firstName, lastName } = req.body;
+    const { uid, email } = req.user;
 
     try {
-        let user = await User.findOne({ uid });
-
-        if (user) {
-            res.status(200).json(user);
-        } else {
-            user = new User({ uid, firstName, lastName, email });
-            const savedUser = await user.save();
-            res.status(201).json(savedUser);
-        }
+        const newUser = new User({ uid, firstName, lastName, email });
+        const savedUser = await newUser.save();
+        res.status(201).json(savedUser);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        if (error.code === 11000) {
+            res.status(409).json({ error: 'A user with the given email or UID already exists.' });
+        } else {
+            res.status(400).json({ error: error.message });
+        }
     }
 };
 
-module.exports = signInOrSignUp;
+module.exports = signUp;

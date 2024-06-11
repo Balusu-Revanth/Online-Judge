@@ -9,11 +9,8 @@ if (!fs.existsSync(dirCodes)) {
 }
 
 const generateCodeFile = async (language, code) => {
-  console.log(language);
   const jobId = uuidv4();
-  console.log(jobId);
   const filePath = path.join(dirCodes, `${jobId}.${language}`);
-  console.log(filePath);  
   fs.writeFileSync(filePath, code);
   return filePath;
 }
