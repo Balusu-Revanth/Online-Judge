@@ -1,10 +1,12 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { auth, googleProvider } from '../config/firebase';
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup } from 'firebase/auth';
+import { Container, Typography, Box, TextField, Button } from '@mui/material';
+import { Google as GoogleIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from '../context/AuthContext';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../config/firebase';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
 
 const SignUp = () => {
@@ -113,91 +115,127 @@ const SignUp = () => {
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
+    <Container maxWidth="sm">
+      <Box mt={3} mb={2} textAlign="center">
+        <Typography variant="h4" component="h1" gutterBottom>
+          Create your account
+        </Typography>
+      </Box>
       <form onSubmit={formik.handleSubmit}>
-        <div>
-          <label htmlFor="firstName">First Name</label>
-          <input
+        <Box mb={1}>
+          <TextField
+            fullWidth
             id="firstName"
             name="firstName"
+            label="First Name"
             type="text"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.firstName}
+            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+            helperText={formik.touched.firstName && formik.errors.firstName}
+            variant="outlined"
           />
-          {formik.touched.firstName && formik.errors.firstName ? (
-            <div style={{ color: 'red' }}>{formik.errors.firstName}</div>
-          ) : null}
-        </div>
-        <div>
-          <label htmlFor="lastName">Last Name</label>
-          <input
+        </Box>
+        <Box mb={1}>
+          <TextField
+            fullWidth
             id="lastName"
             name="lastName"
+            label="Last Name"
             type="text"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.lastName}
+            error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+            helperText={formik.touched.lastName && formik.errors.lastName}
+            variant="outlined"
           />
-          {formik.touched.lastName && formik.errors.lastName ? (
-            <div style={{ color: 'red' }}>{formik.errors.lastName}</div>
-          ) : null}
-        </div>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
+        </Box>
+        <Box mb={1}>
+          <TextField
+            fullWidth
             id="email"
             name="email"
+            label="Email"
             type="email"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.email}
             autoComplete="email"
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
+            variant="outlined"
           />
-          {formik.touched.email && formik.errors.email ? (
-            <div style={{ color: 'red' }}>{formik.errors.email}</div>
-          ) : null}
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
+        </Box>
+        <Box mb={1}>
+          <TextField
+            fullWidth
             id="password"
             name="password"
+            label="Password"
             type="password"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.password}
-            autoComplete="new-password"
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+            variant="outlined"
           />
-          {formik.touched.password && formik.errors.password ? (
-            <div style={{ color: 'red' }}>{formik.errors.password}</div>
-          ) : null}
-        </div>
-        <div>
-          <label htmlFor="confirmPassword">Re-enter Password</label>
-          <input
+        </Box>
+        <Box mb={1}>
+          <TextField
+            fullWidth
             id="confirmPassword"
             name="confirmPassword"
+            label="Confirm Password"
             type="password"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.confirmPassword}
-            autoComplete="new-password"
+            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+            variant="outlined"
           />
-          {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
-            <div style={{ color: 'red' }}>{formik.errors.confirmPassword}</div>
-          ) : null}
-        </div>
+        </Box>
         {formik.errors.submit && (
-          <div style={{ color: 'red' }}>{formik.errors.submit}</div>
+          <Box mb={1}>
+            <Typography color="error">{formik.errors.submit}</Typography>
+          </Box>
         )}
-        <button type="submit" disabled={formik.isSubmitting}>Sign Up</button>
+        <Box mb={2}>
+          <Button
+            fullWidth
+            color="primary"
+            variant="contained"
+            type="submit"
+            disabled={formik.isSubmitting}
+          >
+            Sign Up
+          </Button>
+        </Box>
       </form>
-      <button onClick={handleGoogleSignUp}>Sign Up with Google</button>
-      <button onClick={() => navigate('/signin')}>Already have an account? Sign In</button>
-    </div>
-  );
+      <Box mb={2}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="secondary"
+          onClick={handleGoogleSignUp}
+          startIcon={<GoogleIcon />}
+        >
+          Sign Up with Google
+        </Button>
+      </Box>
+      <Box mb={2} textAlign="center">
+        <Typography variant="body1">
+          Have an account?{' '}
+          <Button variant="text" style={{ textTransform: 'none' }} onClick={() => navigate('/signin')}>
+            Sign In
+          </Button>
+        </Typography>
+      </Box>
+    </Container>
+  );  
 };
 
 export default SignUp;

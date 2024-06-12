@@ -2,13 +2,14 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../config/firebase';
+import Loading from './Loading';
 
 const ProtectedRoute = ({ component: Component }) => {
   const [user, loading, error] = useAuthState(auth);
   const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {

@@ -5,9 +5,12 @@ import { auth, googleProvider } from '../config/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, deleteUser } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
+import { TextField, Button, Container, Typography, Box, Grid, useTheme } from '@mui/material';
+import { Google as GoogleIcon } from '@mui/icons-material';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -79,46 +82,127 @@ const SignIn = () => {
   };
 
   return (
-    <div>
-      <h2>Sign In</h2>
-      <form onSubmit={formik.handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-            autoComplete='email'
-          />
-          {formik.touched.email && formik.errors.email ? (
-            <div style={{ color: 'red' }}>{formik.errors.email}</div>
-          ) : null}
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-          />
-          {formik.touched.password && formik.errors.password ? (
-            <div style={{ color: 'red' }}>{formik.errors.password}</div>
-          ) : null}
-        </div>
-        {formik.errors.submit && (
-          <div style={{ color: 'red' }}>{formik.errors.submit}</div>
-        )}
-        <button type="submit" disabled={formik.isSubmitting}>Sign In</button>
-      </form>
-      <button onClick={() => navigate('/signup')}>Sign Up</button>
-      <button onClick={handleGoogleSignIn}>Sign In with Google</button>
-    </div>
+    <Grid container component="main" sx={{ height: '100vh' }}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={6}
+        sx={{
+          backgroundColor: 'white',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column'
+        }}
+      >
+        <video
+          src="/assets/logo/animated-logo.mp4"
+          autoPlay
+          muted
+          style={{ width: '512px' }}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={6}
+        sx={{
+          backgroundColor: 'black',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          color: 'white'
+        }}
+      >
+        <Container maxWidth="xs">
+          <Box mb={4} textAlign="center">
+            <Typography variant="h4" component="h1" gutterBottom style={{ color: theme.palette.secondary.main }}>
+              Log in to your account
+            </Typography>
+            <Typography variant="body1">
+              Don't have an account?{' '}
+              <Button variant="text" size="large" style={{ textTransform: 'none' }} onClick={() => navigate('/signup')}>
+                Sign Up
+              </Button>
+            </Typography>
+          </Box>
+          <form onSubmit={formik.handleSubmit}>
+            <Box mb={2}>
+              <TextField
+                fullWidth
+                id="email"
+                name="email"
+                label="Email"
+                type="email"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
+                autoComplete="email"
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+                variant="outlined"
+                InputLabelProps={{ style: { color: 'white' } }}
+                inputProps={{
+                  style: {
+                    color: 'white',
+                    borderColor: 'white',
+                  },
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                fullWidth
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.password}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}
+                variant="outlined"
+                InputLabelProps={{ style: { color: 'white' } }}
+                InputProps={{ style: { color: 'white' } }}
+              />
+            </Box>
+            {formik.errors.submit && (
+              <Box mb={2}>
+                <Typography color="error">{formik.errors.submit}</Typography>
+              </Box>
+            )}
+            <Box mb={2}>
+              <Button
+                fullWidth
+                color="primary"
+                variant="contained"
+                type="submit"
+                disabled={formik.isSubmitting}
+                style={{ textTransform: 'none' }}
+              >
+                Sign In
+              </Button>
+            </Box>
+          </form>
+          <Box mb={2}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              startIcon={<GoogleIcon />}
+              onClick={handleGoogleSignIn}
+              style={{ textTransform: 'none' }}
+            >
+              Sign In with Google
+            </Button>
+          </Box>
+        </Container>
+      </Grid>
+    </Grid>
   );
 };
 

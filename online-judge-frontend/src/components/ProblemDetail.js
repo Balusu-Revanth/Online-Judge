@@ -1,8 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  Select,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Loading from './Loading';
+
+const useStyles = makeStyles((theme) => ({
+  codeEditor: {
+    fontFamily: 'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace',
+    fontSize: 14,
+    width: '100%',
+    minHeight: '400px',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    backgroundColor: '#f5f5f5',
+  },
+  tabContent: {
+    marginTop: theme.spacing(2),
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+}));
 
 const ProblemDetail = () => {
+  const classes = useStyles();
   const { id } = useParams();
   const [problem, setProblem] = useState(null);
   const [solvedProblems, setSolvedProblems] = useState([]);
@@ -18,17 +54,12 @@ const ProblemDetail = () => {
   const boilerplate = {
     cpp: `#include <iostream> 
 using namespace std;
-// Define the main function
+
 int main() { 
-    // Declare variables
     int num1, num2, sum;
-    // Prompt user for input
     cin >> num1 >> num2;  
-    // Calculate the sum
     sum = num1 + num2;  
-    // Output the result
     cout << "The sum of the two numbers is: " << sum;  
-    // Return 0 to indicate successful execution
     return 0;  
 }`,
     java: `import java.util.Scanner;
@@ -36,12 +67,9 @@ int main() {
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        // Read two integers from input
         int num1 = sc.nextInt();
         int num2 = sc.nextInt();
-        // Calculate the sum
         int sum = num1 + num2;
-        // Print the sum
         System.out.println("The sum of the two numbers is: " + sum);
     }
 }`,
@@ -52,7 +80,7 @@ num2 = int(input())
 sum = num1 + num2
 # Print the sum
 print(f"The sum of the two numbers is: {sum}")
-  `
+`,
   };
 
   const [code, setCode] = useState(boilerplate.cpp);
@@ -60,7 +88,7 @@ print(f"The sum of the two numbers is: {sum}")
   useEffect(() => {
     const fetchProblem = async () => {
       if (!token) {
-        return <div>Loading...</div>;
+        return <Loading />;
       }
       try {
         const response = await fetch(`http://localhost:8000/problems/${id}`, {
@@ -148,7 +176,7 @@ print(f"The sum of the two numbers is: {sum}")
         body: JSON.stringify({ language, code, input })
       });
       const result = await response.json();
-      setOutput(result.output);
+      setOutput(result.message);
       setActiveTab('output');
     } catch (error) {
       setError(error.message);
@@ -162,79 +190,108 @@ print(f"The sum of the two numbers is: {sum}")
   }
 
   if (!problem) {
-    return <div>Loading...</div>;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <div>
-      <h2>{problem.title} {isSolved(problem.problem_id) && <span style={{ color: 'green' }}> (Solved)</span>}</h2>
-      <p>{problem.description}</p>
-      <h3>Input Description</h3>
-      <p>{problem.inputDescription}</p>
-      <h3>Output Description</h3>
-      <p>{problem.outputDescription}</p>
-      <h3>Sample Inputs</h3>
-      <pre>{problem.sampleInputs}</pre>
-      <h3>Sample Outputs</h3>
-      <pre>{problem.sampleOutputs}</pre>
-      <p><strong>Difficulty:</strong> {problem.difficulty}</p>
-      <p><strong>Tags:</strong> {problem.tags.join(', ')}</p>
-
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="language">Select language:</label>
-        <select
-          value={language}
-          onChange={handleLanguageChange}
-          id="language"
-        >
-          <option value="cpp">C++</option>
-          <option value="java">Java</option>
-          <option value="py">Python</option>
-        </select>
-        <textarea
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <Typography variant="h4" gutterBottom>
+          {problem.title} {isSolved(problem.problem_id) && <span style={{ color: 'green' }}> (Solved)</span>}
+        </Typography>
+        <Box mb={2}>
+          <Chip label={problem.difficulty} color="primary" />
+          {problem.tags.map((tag, index) => (
+            <Chip key={index} label={tag} color="secondary" style={{ marginLeft: '5px' }} />
+          ))}
+        </Box>
+        <Typography variant="body1">{problem.description}</Typography>
+        <Typography variant="h6">Input Description</Typography>
+        <Typography variant="body2">{problem.inputDescription}</Typography>
+        <Typography variant="h6">Output Description</Typography>
+        <Typography variant="body2">{problem.outputDescription}</Typography>
+        <Typography variant="h6">Sample Inputs</Typography>
+        <pre>{problem.sampleInputs.join('\n')}</pre>
+        <Typography variant="h6">Sample Outputs</Typography>
+        <pre>{problem.sampleOutputs.join('\n')}</pre>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Box mb={2}>
+          <Typography variant="h6">Code Editor</Typography>
+          <Select
+            value={language}
+            onChange={handleLanguageChange}
+            variant="outlined"
+            className={classes.formControl}
+          >
+            <MenuItem value="cpp">C++</MenuItem>
+            <MenuItem value="java">Java</MenuItem>
+            <MenuItem value="py">Python</MenuItem>
+          </Select>
+        </Box>
+        <TextField
+          multiline
+          rows={15}
+          variant="outlined"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="Enter your code here"
-          rows="10"
-          cols="50"
+          className={classes.codeEditor}
         />
-        <button type="submit" disabled={submitting}>Submit Code</button>
-        <button onClick={handleRun} disabled={submitting}>Run Code</button>
-      </form>
-
-      <div>
-        <button onClick={() => setActiveTab('input')} className={activeTab === 'input' ? 'active' : ''}>Input</button>
-        <button onClick={() => setActiveTab('output')} className={activeTab === 'output' ? 'active' : ''}>Output</button>
-        <button onClick={() => setActiveTab('verdict')} className={activeTab === 'verdict' ? 'active' : ''}>Verdict</button>
-      </div>
-
-      {activeTab === 'input' && (
-        <div>
-          <h3>Input</h3>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter your input here"
-            rows="5"
-            cols="50"
-          />
-        </div>
-      )}
-
-      {activeTab === 'output' && (
-        <div>
-          <h3>Output</h3>
-          <pre>{output}</pre>
-        </div>
-      )}
-
-      {activeTab === 'verdict' && submissionResult && (
-        <div>
-          <h3>Verdict</h3>
-          <p>{submissionResult.message}</p>
-        </div>
-      )}
-    </div>
+        <Box mt={2}>
+          <Tabs
+            value={activeTab}
+            onChange={(e, newValue) => setActiveTab(newValue)}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab label="Input" value="input" />
+            <Tab label="Output" value="output" />
+            <Tab label="Verdict" value="verdict" />
+          </Tabs>
+          <Box className={classes.tabContent}>
+            {activeTab === 'input' && (
+              <TextField
+                multiline
+                rows={5}
+                variant="outlined"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                fullWidth
+              />
+            )}
+            {activeTab === 'output' && (
+              <Typography variant="body1"><pre>{output}</pre></Typography>
+            )}
+            {activeTab === 'verdict' && submissionResult && (
+              <Typography variant="body1">{submissionResult.message}</Typography>
+            )}
+          </Box>
+          <Box mt={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleRun}
+            disabled={submitting}
+            style={{ marginRight: '10px' }}
+          >
+            Run Code
+          </Button>
+          <Button
+           variant="contained"
+           color="primary"
+           onClick={handleSubmit}
+           disabled={submitting}
+          >
+            Submit Code
+          </Button>
+        </Box>
+      </Box>
+    </Grid>
+  </Grid>
   );
 };
 
