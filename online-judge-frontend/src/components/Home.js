@@ -16,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Navbar from "./Navbar";
 import Loading from "./Loading";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Home = () => {
   const [problems, setProblems] = useState([]);
@@ -29,7 +30,7 @@ const Home = () => {
     const fetchProblems = async () => {
       if (!token) return;
       try {
-        const response = await fetch("http://localhost:8000/problems/all", {
+        const response = await fetch(`${API_URL}/problems/all`, {
           method: "GET",
           headers: { Authorization: token },
         });
@@ -45,7 +46,7 @@ const Home = () => {
       if (!token) return;
       try {
         const response = await fetch(
-          "http://localhost:8000/user/solved-problems",
+          `${API_URL}/user/solved-problems`,
           {
             method: "GET",
             headers: { Authorization: token },
@@ -79,7 +80,7 @@ const Home = () => {
     if (!confirmDelete || !token) return;
     try {
       const response = await fetch(
-        `http://localhost:8000/problems/delete/${id}`,
+        `${API_URL}/problems/delete/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },

@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ const SignUp = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
-      const response = await fetch('http://localhost:8000/user/get-user', {
+      const response = await fetch(`${API_URL}/user/get-user`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +97,7 @@ const SignUp = () => {
 
   const registerUserOnBackend = async (idToken, userDetails) => {
     try {
-      const response = await fetch('http://localhost:8000/auth/signup', {
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

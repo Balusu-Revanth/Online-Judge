@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Container, Box, Typography, Button, MenuItem, TextField, Select, InputLabel, FormControl, Chip } from '@mui/material';
 import Navbar from './Navbar';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const AddProblem = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const AddProblem = () => {
           })}
           onSubmit={async (values) => {
             try {
-              const response = await fetch('http://localhost:8000/problems/add', {
+              const response = await fetch(`${API_URL}/problems/add`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

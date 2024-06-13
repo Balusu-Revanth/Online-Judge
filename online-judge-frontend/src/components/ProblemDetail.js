@@ -13,27 +13,62 @@ import {
   Tabs,
   TextField,
   Typography,
+  Paper,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Navbar from './Navbar';
 import Loading from './Loading';
+import 'prismjs/themes/prism-tomorrow.css';
+import Prism from 'prismjs';
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: '#121212',
+    color: '#ffffff',
+    minHeight: '104vh',
+  },
   codeEditor: {
     fontFamily: 'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace',
     fontSize: 14,
     width: '100%',
-    minHeight: '400px',
     padding: '10px',
-    border: '1px solid #ccc',
+    border: '1px solid #333',
     borderRadius: '4px',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1e1e1e',
+    color: '#ffffff',
+    overflowY: 'auto',
+    '& .MuiInputBase-root': {
+      color: '#ffffff',
+    },
   },
   tabContent: {
     marginTop: theme.spacing(2),
+    backgroundColor: '#1e1e1e',
+    padding: theme.spacing(2),
+    borderRadius: '4px',
+    color: '#ffffff',
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
+    color: '#ffffff',
+    '& .MuiInputBase-root': {
+      color: '#ffffff',
+    },
+    '& .MuiSelect-icon': {
+      color: '#ffffff',
+    },
+  },
+  scrollableBox: {
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    padding: theme.spacing(2),
+    backgroundColor: '#1e1e1e',
+    borderRadius: '4px',
+    color: '#ffffff',
   },
 }));
 
@@ -86,12 +121,14 @@ print(f"The sum of the two numbers is: {sum}")
   const [code, setCode] = useState(boilerplate.cpp);
 
   useEffect(() => {
+    Prism.highlightAll(); // Highlight code syntax
+
     const fetchProblem = async () => {
       if (!token) {
         return <Loading />;
       }
       try {
-        const response = await fetch(`http://localhost:8000/problems/${id}`, {
+        const response = await fetch(`${API_URL}/problems/${id}`, {
           method: 'GET',
           headers: {
             'Authorization': token
@@ -113,7 +150,7 @@ print(f"The sum of the two numbers is: {sum}")
         return;
       }
       try {
-        const response = await fetch('http://localhost:8000/user/solved-problems', {
+        const response = await fetch(`${API_URL}/user/solved-problems`, {
           method: 'GET',
           headers: {
             'Authorization': token
@@ -143,7 +180,7 @@ print(f"The sum of the two numbers is: {sum}")
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:8000/problems/submit/${id}`, {
+      const response = await fetch(`${API_URL}/problems/submit/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,7 +204,7 @@ print(f"The sum of the two numbers is: {sum}")
       setInput(problem.sampleInputs[0]);
     }
     try {
-      const response = await fetch(`http://localhost:8000/problems/run`, {
+      const response = await fetch(`${API_URL}/problems/run`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,100 +235,109 @@ print(f"The sum of the two numbers is: {sum}")
   }
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={6}>
-        <Typography variant="h4" gutterBottom>
-          {problem.title} {isSolved(problem.problem_id) && <span style={{ color: 'green' }}> (Solved)</span>}
-        </Typography>
-        <Box mb={2}>
-          <Chip label={problem.difficulty} color="primary" />
-          {problem.tags.map((tag, index) => (
-            <Chip key={index} label={tag} color="secondary" style={{ marginLeft: '5px' }} />
-          ))}
-        </Box>
-        <Typography variant="body1">{problem.description}</Typography>
-        <Typography variant="h6">Input Description</Typography>
-        <Typography variant="body2">{problem.inputDescription}</Typography>
-        <Typography variant="h6">Output Description</Typography>
-        <Typography variant="body2">{problem.outputDescription}</Typography>
-        <Typography variant="h6">Sample Inputs</Typography>
-        <pre>{problem.sampleInputs.join('\n')}</pre>
-        <Typography variant="h6">Sample Outputs</Typography>
-        <pre>{problem.sampleOutputs.join('\n')}</pre>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Box mb={2}>
-          <Typography variant="h6">Code Editor</Typography>
-          <Select
-            value={language}
-            onChange={handleLanguageChange}
-            variant="outlined"
-            className={classes.formControl}
-          >
-            <MenuItem value="cpp">C++</MenuItem>
-            <MenuItem value="java">Java</MenuItem>
-            <MenuItem value="py">Python</MenuItem>
-          </Select>
-        </Box>
-        <TextField
-          multiline
-          rows={15}
-          variant="outlined"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          className={classes.codeEditor}
-        />
-        <Box mt={2}>
-          <Tabs
-            value={activeTab}
-            onChange={(e, newValue) => setActiveTab(newValue)}
-            indicatorColor="primary"
-            textColor="primary"
-          >
-            <Tab label="Input" value="input" />
-            <Tab label="Output" value="output" />
-            <Tab label="Verdict" value="verdict" />
-          </Tabs>
-          <Box className={classes.tabContent}>
-            {activeTab === 'input' && (
-              <TextField
-                multiline
-                rows={5}
+    <div className={classes.root}>
+      <Navbar />
+      <Grid container spacing={3} sx={{ paddingTop: '64px' }}>
+        <Grid item xs={12} md={6} >
+          <Paper className={classes.scrollableBox}>
+            <Typography variant="h4" gutterBottom>
+              {problem.title} {isSolved(problem.problem_id) && <CheckCircleIcon style={{ color: "green", marginLeft: 4 }} />}
+            </Typography>
+            <Box mb={2}>
+              <Chip label={problem.difficulty} color="primary" />
+              {problem.tags.map((tag, index) => (
+                <Chip key={index} label={tag} color="secondary" style={{ marginLeft: '5px' }} />
+              ))}
+            </Box>
+            <Typography variant="body1">{problem.description}</Typography>
+            <Typography variant="h6">Input Description</Typography>
+            <Typography variant="body2">{problem.inputDescription}</Typography>
+            <Typography variant="h6">Output Description</Typography>
+            <Typography variant="body2">{problem.outputDescription}</Typography>
+            <Typography variant="h6">Sample Inputs</Typography>
+            <pre>{problem.sampleInputs.join('\n')}</pre>
+            <Typography variant="h6">Sample Outputs</Typography>
+            <pre>{problem.sampleOutputs.join('\n')}</pre>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper className={classes.scrollableBox}>
+            <Box mb={2}>
+              <Select
+                value={language}
+                onChange={handleLanguageChange}
                 variant="outlined"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                fullWidth
-              />
-            )}
-            {activeTab === 'output' && (
-              <Typography variant="body1"><pre>{output}</pre></Typography>
-            )}
-            {activeTab === 'verdict' && submissionResult && (
-              <Typography variant="body1">{submissionResult.message}</Typography>
-            )}
-          </Box>
-          <Box mt={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleRun}
-            disabled={submitting}
-            style={{ marginRight: '10px' }}
-          >
-            Run Code
-          </Button>
-          <Button
-           variant="contained"
-           color="primary"
-           onClick={handleSubmit}
-           disabled={submitting}
-          >
-            Submit Code
-          </Button>
-        </Box>
-      </Box>
-    </Grid>
-  </Grid>
+                className={classes.formControl}
+                textColor="primary"
+              >
+                <MenuItem value="cpp">C++</MenuItem>
+                <MenuItem value="java">Java</MenuItem>
+                <MenuItem value="py">Python</MenuItem>
+              </Select>
+            </Box>
+            <TextField
+              multiline
+              rows={15}
+              variant="outlined"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className={classes.codeEditor}
+              InputProps={{ classes: { input: classes.codeEditor } }}
+            />
+            <Box mt={2}>
+              <Tabs
+                value={activeTab}
+                onChange={(e, newValue) => setActiveTab(newValue)}
+                indicatorColor="primary"
+                textColor="#ffffff"
+              >
+                <Tab label="Input" value="input"/>
+                <Tab label="Output" value="output" />
+                <Tab label="Verdict" value="verdict" />
+              </Tabs>
+              <Box className={classes.tabContent}>
+                {activeTab === 'input' && (
+                  <TextField
+                    multiline
+                    rows={5}
+                    variant="outlined"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    fullWidth
+                    InputProps={{ classes: { input: classes.tabContent } }}
+                  />
+                )}
+                {activeTab === 'output' && (
+                  <Typography variant="body1"><pre>{output}</pre></Typography>
+                )}
+                {activeTab === 'verdict' && submissionResult && (
+                  <Typography variant="body1">{submissionResult.message}</Typography>
+                )}
+              </Box>
+              <Box mt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleRun}
+                  disabled={submitting}
+                  style={{ marginRight: '10px' }}
+                >
+                  Run Code
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                >
+                  Submit Code
+                </Button>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </div>
   );
 };
 

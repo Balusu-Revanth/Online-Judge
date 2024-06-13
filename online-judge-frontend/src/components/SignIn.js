@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateFirebaseAuthErrorMessage } from '../utils/authErrorHandler';
 import { TextField, Button, Container, Typography, Box, Grid, useTheme } from '@mui/material';
 import { Google as GoogleIcon } from '@mui/icons-material';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const SignIn = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
 
-      const response = await fetch('http://localhost:8000/user/get-user', {
+      const response = await fetch(`${API_URL}/user/get-user`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ const SignIn = () => {
 
   const verifyUserOnBackend = async (idToken, email) => {
     try {
-      const response = await fetch('http://localhost:8000/auth/signin', {
+      const response = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

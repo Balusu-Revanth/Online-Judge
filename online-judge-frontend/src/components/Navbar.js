@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppBar, Toolbar, Box, Button, Menu, MenuItem, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useAuth } from '../context/AuthContext';
 import { auth } from "../config/firebase";
 import { deleteUser, sendPasswordResetEmail, signOut, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -12,6 +13,13 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = React.useState(null);
   const [error, setError] = React.useState("");
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      setError("");
+    }
+  }, [error]);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -58,7 +66,7 @@ const Navbar = () => {
           await reauthenticateWithCredential(user, credential);
 
           const response = await fetch(
-            "http://localhost:8000/user/delete-user",
+            `${API_URL}/user/delete-user`,
             {
               method: "DELETE",
               headers: {

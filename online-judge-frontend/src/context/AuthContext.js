@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../config/firebase';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const AuthContext = createContext();
 
@@ -13,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUserDetails = async (idToken) => {
       try {
-        const response = await fetch('http://localhost:8000/user/get-user', {
+        const response = await fetch(`${API_URL}/user/get-user`, {
           headers: {
             'Authorization': idToken
           }
