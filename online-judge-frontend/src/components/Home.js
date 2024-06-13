@@ -83,7 +83,7 @@ const Home = () => {
         `${API_URL}/problems/delete/${id}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: token },
         }
       );
       if (!response.ok) throw new Error("Failed to delete problem");
