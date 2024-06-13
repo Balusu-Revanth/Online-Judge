@@ -10,7 +10,7 @@ if (!fs.existsSync(outputPath)) {
 
 const runCppCode = async (filePath, inputPath) => {
   const jobId = path.basename(filePath).split('.')[0];
-  const outPath = path.join(outputPath, `${jobId}.exe`);
+  const outPath = path.join(outputPath, `${jobId}.out`);
   return new Promise((resolve, reject) => {
     exec(`g++ ${filePath} -o ${outPath}`, (error, stdout, stderr) => {
       if (error) {

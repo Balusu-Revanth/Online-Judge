@@ -22,7 +22,6 @@ const runProblem = async (req, res) => {
       } else if (language === 'java') {
         result = await runJavaCode(filePath, inputPath);
       } else if (language === 'py') {
-        console.log(filePath, inputPath);
         result = await runPythonCode(filePath, inputPath);
       }
     } catch (error) {
