@@ -1,6 +1,6 @@
-const  { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const runJavaCode = async (filePath, inputPath) => {
   return new Promise((resolve, reject) => {
@@ -16,6 +16,6 @@ const runJavaCode = async (filePath, inputPath) => {
       resolve(stdout.trim());
     });
   });
-}
+};
 
 module.exports = { runJavaCode };

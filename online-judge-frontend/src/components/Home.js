@@ -45,13 +45,10 @@ const Home = () => {
     const fetchSolvedProblems = async () => {
       if (!token) return;
       try {
-        const response = await fetch(
-          `${API_URL}/user/solved-problems`,
-          {
-            method: "GET",
-            headers: { Authorization: token },
-          }
-        );
+        const response = await fetch(`${API_URL}/user/solved-problems`, {
+          method: "GET",
+          headers: { Authorization: token },
+        });
         if (!response.ok) throw new Error("Failed to fetch solved problems");
         const data = await response.json();
         setSolvedProblems(data);
@@ -79,13 +76,10 @@ const Home = () => {
     );
     if (!confirmDelete || !token) return;
     try {
-      const response = await fetch(
-        `${API_URL}/problems/delete/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: token },
-        }
-      );
+      const response = await fetch(`${API_URL}/problems/delete/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: token },
+      });
       const data = await response.json();
       console.log(data);
       if (!response.ok) throw new Error("Failed to delete problem");
@@ -119,7 +113,7 @@ const Home = () => {
     <div>
       <Navbar />
       {error && <Typography color="error">{error}</Typography>}
-      <Container sx={{ paddingTop: '64px' }}>
+      <Container sx={{ paddingTop: "64px" }}>
         <Box mt={2}>
           <Typography variant="h4">Problem List</Typography>
           <List>
@@ -139,30 +133,43 @@ const Home = () => {
               >
                 <Box
                   sx={{
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
                     paddingBottom: 1,
-                    color: 'white',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      color: 'primary.main',
+                    color: "white",
+                    cursor: "pointer",
+                    "&:hover": {
+                      color: "primary.main",
                     },
                   }}
                   onClick={() => handleProblemClick(problem.problem_id)}
                 >
-                  <Typography variant="h6">
-                    {problem.title}
-                  </Typography>
-                  {isSolved(problem.problem_id) && <CheckCircleIcon style={{ color: "green", marginLeft: 4 }} />}
+                  <Typography variant="h6">{problem.title}</Typography>
+                  {isSolved(problem.problem_id) && (
+                    <CheckCircleIcon
+                      style={{ color: "green", marginLeft: 4 }}
+                    />
+                  )}
                 </Box>
                 <ListItemText
                   primary={
                     <>
-                      <Chip label={problem.difficulty} color={getDifficultyColor(problem.difficulty)} size="small" sx={{ marginBottom: 1, color: 'white' }} />
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      <Chip
+                        label={problem.difficulty}
+                        color={getDifficultyColor(problem.difficulty)}
+                        size="small"
+                        sx={{ marginBottom: 1, color: "white" }}
+                      />
+                      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {problem.tags.map((tag, index) => (
-                          <Chip key={index} label={tag} color="secondary" size="small" sx={{ color: 'white' }} />
+                          <Chip
+                            key={index}
+                            label={tag}
+                            color="secondary"
+                            size="small"
+                            sx={{ color: "white" }}
+                          />
                         ))}
                       </Box>
                     </>

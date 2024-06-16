@@ -1,15 +1,15 @@
-const fs = require('fs');
-const { generateCodeFile } = require('../../utils/generateCodeFile');
-const { generateInputFile } = require('../../utils/generateInputFile');
-const { runCppCode } = require('../../utils/runCppCode');
-const { runJavaCode } = require('../../utils/runJavaCode');
-const { runPythonCode } = require('../../utils/runPythonCode');
+const fs = require("fs");
+const { generateCodeFile } = require("../../utils/generateCodeFile");
+const { generateInputFile } = require("../../utils/generateInputFile");
+const { runCppCode } = require("../../utils/runCppCode");
+const { runJavaCode } = require("../../utils/runJavaCode");
+const { runPythonCode } = require("../../utils/runPythonCode");
 
 const runProblem = async (req, res) => {
   const { language, code, input } = req.body;
 
   if (!code) {
-    return res.status(400).json({ message: 'Code is required' });
+    return res.status(400).json({ message: "Code is required" });
   }
 
   try {
@@ -17,11 +17,11 @@ const runProblem = async (req, res) => {
     const inputPath = await generateInputFile(input);
     let result;
     try {
-      if (language === 'cpp') {
+      if (language === "cpp") {
         result = await runCppCode(filePath, inputPath);
-      } else if (language === 'java') {
+      } else if (language === "java") {
         result = await runJavaCode(filePath, inputPath);
-      } else if (language === 'py') {
+      } else if (language === "py") {
         result = await runPythonCode(filePath, inputPath);
       }
     } catch (error) {
@@ -38,6 +38,6 @@ const runProblem = async (req, res) => {
     if (inputPath) fs.unlinkSync(inputPath);
     res.status(500).json({ message: `Server error: ${error.message}` });
   }
-}
+};
 
 module.exports = runProblem;

@@ -1,11 +1,11 @@
-const fs = require('fs');
-const User = require('../../models/User');
-const Problem = require('../../models/Problem');
-const { generateCodeFile } = require('../../utils/generateCodeFile');
-const { generateInputFile } = require('../../utils/generateInputFile');
-const { runCppCode } = require('../../utils/runCppCode');
-const { runJavaCode } = require('../../utils/runJavaCode');
-const { runPythonCode } = require('../../utils/runPythonCode');
+const fs = require("fs");
+const User = require("../../models/User");
+const Problem = require("../../models/Problem");
+const { generateCodeFile } = require("../../utils/generateCodeFile");
+const { generateInputFile } = require("../../utils/generateInputFile");
+const { runCppCode } = require("../../utils/runCppCode");
+const { runJavaCode } = require("../../utils/runJavaCode");
+const { runPythonCode } = require("../../utils/runPythonCode");
 
 const submitProblem = async (req, res) => {
   const { problem_id } = req.params;
@@ -13,13 +13,13 @@ const submitProblem = async (req, res) => {
   const { uid } = req.user;
 
   if (!code) {
-    return res.status(400).json({ message: 'Code is required' });
+    return res.status(400).json({ message: "Code is required" });
   }
 
   try {
-    const problem = await Problem.findOne({ problem_id }, 'testCases');
+    const problem = await Problem.findOne({ problem_id }, "testCases");
     if (!problem) {
-      return res.status(404).json({ message: 'Problem not found' });
+      return res.status(404).json({ message: "Problem not found" });
     }
 
     const filePath = await generateCodeFile(language, code);
@@ -28,11 +28,11 @@ const submitProblem = async (req, res) => {
       const testCase = problem.testCases[i];
       const inputPath = await generateInputFile(testCase.input);
       try {
-        if (language === 'cpp') {
+        if (language === "cpp") {
           result = await runCppCode(filePath, inputPath);
-        } else if (language === 'java') {
+        } else if (language === "java") {
           result = await runJavaCode(filePath, inputPath);
-        } else if (language === 'py') {
+        } else if (language === "py") {
           result = await runPythonCode(filePath, inputPath);
         }
       } catch (error) {
@@ -43,7 +43,9 @@ const submitProblem = async (req, res) => {
       if (inputPath) fs.unlinkSync(inputPath);
       if (result !== testCase.output.trim()) {
         if (filePath) fs.unlinkSync(filePath);
-        return res.status(200).json({ message: `Failed at test case ${i + 1}` });
+        return res
+          .status(200)
+          .json({ message: `Failed at test case ${i + 1}` });
       }
     }
 
@@ -55,11 +57,11 @@ const submitProblem = async (req, res) => {
       await user.save();
     }
 
-    res.status(200).json({ message: 'All test cases passed' });
+    res.status(200).json({ message: "All test cases passed" });
   } catch (error) {
     if (filePath) fs.unlinkSync(filePath);
     res.status(500).json({ message: `Server error: ${error.message}` });
   }
-}
+};
 
 module.exports = submitProblem;

@@ -1,15 +1,15 @@
-const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
-const outputPath = path.join(__dirname, '../data/outputs');
+const outputPath = path.join(__dirname, "../data/outputs");
 
 if (!fs.existsSync(outputPath)) {
   fs.mkdirSync(outputPath, { recursive: true });
 }
 
 const runCppCode = async (filePath, inputPath) => {
-  const jobId = path.basename(filePath).split('.')[0];
+  const jobId = path.basename(filePath).split(".")[0];
   const outPath = path.join(outputPath, `${jobId}.out`);
   return new Promise((resolve, reject) => {
     exec(`g++ ${filePath} -o ${outPath}`, (error, stdout, stderr) => {

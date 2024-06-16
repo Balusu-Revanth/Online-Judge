@@ -1,10 +1,24 @@
-import React, { useEffect } from 'react';
-import { AppBar, Toolbar, Box, Button, Menu, MenuItem, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import { useAuth } from "../context/AuthContext";
 import { auth } from "../config/firebase";
-import { deleteUser, sendPasswordResetEmail, signOut, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import {
+  deleteUser,
+  sendPasswordResetEmail,
+  signOut,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const Navbar = () => {
@@ -65,16 +79,13 @@ const Navbar = () => {
           const credential = EmailAuthProvider.credential(user.email, password);
           await reauthenticateWithCredential(user, credential);
 
-          const response = await fetch(
-            `${API_URL}/user/delete-user`,
-            {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: token,
-              },
-            }
-          );
+          const response = await fetch(`${API_URL}/user/delete-user`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          });
 
           if (!response.ok) {
             throw new Error("Failed to delete user data from backend.");
@@ -107,12 +118,29 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="fixed" color="secondary" sx={{ width: '100%', zIndex: 9999 }}>
+    <AppBar
+      position="fixed"
+      color="secondary"
+      sx={{ width: "100%", zIndex: 9999 }}
+    >
       <Toolbar>
-        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <img src={`${process.env.PUBLIC_URL}/assets/logo/logo.png`} alt="Logo" style={{ height: 50, marginRight: 10, cursor: 'pointer' }} onClick={() => navigate('/home')} />
+        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+          <img
+            src={`${process.env.PUBLIC_URL}/assets/logo/logo.png`}
+            alt="Logo"
+            style={{ height: 50, marginRight: 10, cursor: "pointer" }}
+            onClick={() => navigate("/home")}
+          />
         </Box>
-        {admin && (<Button color="inherit" style={{ textTransform: 'none' }} onClick={() => navigate('/add-problem')}>Add Problem</Button>)}
+        {admin && (
+          <Button
+            color="inherit"
+            style={{ textTransform: "none" }}
+            onClick={() => navigate("/add-problem")}
+          >
+            Add Problem
+          </Button>
+        )}
         <IconButton
           edge="end"
           color="inherit"
@@ -126,26 +154,26 @@ const Navbar = () => {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
-          sx={{ mt: '45px' }}
+          sx={{ mt: "45px" }}
         >
-          <MenuItem 
+          <MenuItem
             onClick={handleSettingsMenuOpen}
             sx={{
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.08)',
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.08)",
               },
-              padding: '10px 20px'
+              padding: "10px 20px",
             }}
           >
             Account Settings
           </MenuItem>
-          <MenuItem 
+          <MenuItem
             onClick={handleSignOut}
             sx={{
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.08)',
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.08)",
               },
-              padding: '10px 20px'
+              padding: "10px 20px",
             }}
           >
             Sign Out
@@ -155,26 +183,26 @@ const Navbar = () => {
           anchorEl={settingsAnchorEl}
           open={Boolean(settingsAnchorEl)}
           onClose={handleSettingsMenuClose}
-          sx={{ mt: '45px' }}
+          sx={{ mt: "45px" }}
         >
-          <MenuItem 
+          <MenuItem
             onClick={handleDeleteAccount}
             sx={{
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.08)',
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.08)",
               },
-              padding: '10px 20px'
+              padding: "10px 20px",
             }}
           >
             Delete Account
           </MenuItem>
-          <MenuItem 
+          <MenuItem
             onClick={handleResetPassword}
             sx={{
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.08)',
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.08)",
               },
-              padding: '10px 20px'
+              padding: "10px 20px",
             }}
           >
             Reset Password

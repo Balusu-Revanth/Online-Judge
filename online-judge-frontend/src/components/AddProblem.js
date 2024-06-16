@@ -1,10 +1,21 @@
-import React from 'react';
-import { Formik, FieldArray, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Container, Box, Typography, Button, MenuItem, TextField, Select, InputLabel, FormControl, Chip } from '@mui/material';
-import Navbar from './Navbar';
+import React from "react";
+import { Formik, FieldArray, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  MenuItem,
+  TextField,
+  Select,
+  InputLabel,
+  FormControl,
+  Chip,
+} from "@mui/material";
+import Navbar from "./Navbar";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const AddProblem = () => {
@@ -14,54 +25,56 @@ const AddProblem = () => {
   return (
     <div>
       <Navbar />
-      <Container maxWidth="md" sx={{ paddingTop: '64px' }}>
+      <Container maxWidth="md" sx={{ paddingTop: "64px" }}>
         <Formik
           initialValues={{
-            title: '',
-            description: '',
-            inputDescription: '',
-            outputDescription: '',
-            sampleInputs: '',
-            sampleOutputs: '',
-            difficulty: '',
+            title: "",
+            description: "",
+            inputDescription: "",
+            outputDescription: "",
+            sampleInputs: "",
+            sampleOutputs: "",
+            difficulty: "",
             tags: [],
-            testCases: [{ input: '', output: '' }]
+            testCases: [{ input: "", output: "" }],
           }}
           validationSchema={Yup.object({
-            title: Yup.string().required('Required'),
-            description: Yup.string().required('Required'),
-            inputDescription: Yup.string().required('Required'),
-            outputDescription: Yup.string().required('Required'),
-            sampleInputs: Yup.string().required('Required'),
-            sampleOutputs: Yup.string().required('Required'),
-            difficulty: Yup.string().required('Required'),
-            tags: Yup.array().min(1, 'Select at least one tag').required('Required'),
+            title: Yup.string().required("Required"),
+            description: Yup.string().required("Required"),
+            inputDescription: Yup.string().required("Required"),
+            outputDescription: Yup.string().required("Required"),
+            sampleInputs: Yup.string().required("Required"),
+            sampleOutputs: Yup.string().required("Required"),
+            difficulty: Yup.string().required("Required"),
+            tags: Yup.array()
+              .min(1, "Select at least one tag")
+              .required("Required"),
             testCases: Yup.array().of(
               Yup.object().shape({
-                input: Yup.string().required('Required'),
-                output: Yup.string().required('Required')
+                input: Yup.string().required("Required"),
+                output: Yup.string().required("Required"),
               })
-            )
+            ),
           })}
           onSubmit={async (values) => {
             try {
               const response = await fetch(`${API_URL}/problems/add`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': token
+                  "Content-Type": "application/json",
+                  Authorization: token,
                 },
-                body: JSON.stringify(values)
+                body: JSON.stringify(values),
               });
 
               if (!response.ok) {
-                throw new Error('Failed to add problem');
+                throw new Error("Failed to add problem");
               }
-              alert('Problem added successfully!');
-              navigate('/home');
+              alert("Problem added successfully!");
+              navigate("/home");
             } catch (error) {
-              console.error('Error:', error);
-              alert('Failed to submit problem. Please try again.');
+              console.error("Error:", error);
+              alert("Failed to submit problem. Please try again.");
             }
           }}
         >
@@ -181,7 +194,7 @@ const AddProblem = () => {
                     value={values.tags}
                     onChange={handleChange}
                     renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected.map((value) => (
                           <Chip key={value} label={value} />
                         ))}
@@ -202,7 +215,9 @@ const AddProblem = () => {
                   <div>
                     {values.testCases.map((testCase, index) => (
                       <Box key={index} mb={2}>
-                        <Typography variant="h6">Test Case {index + 1}</Typography>
+                        <Typography variant="h6">
+                          Test Case {index + 1}
+                        </Typography>
                         <Box mb={1}>
                           <TextField
                             fullWidth
@@ -214,7 +229,9 @@ const AddProblem = () => {
                             multiline
                             rows={2}
                             error={!!ErrorMessage[`testCases.${index}.input`]}
-                            helperText={<ErrorMessage name={`testCases.${index}.input`} />}
+                            helperText={
+                              <ErrorMessage name={`testCases.${index}.input`} />
+                            }
                           />
                         </Box>
                         <Box mb={1}>
@@ -228,15 +245,27 @@ const AddProblem = () => {
                             multiline
                             rows={2}
                             error={!!ErrorMessage[`testCases.${index}.output`]}
-                            helperText={<ErrorMessage name={`testCases.${index}.output`} />}
+                            helperText={
+                              <ErrorMessage
+                                name={`testCases.${index}.output`}
+                              />
+                            }
                           />
                         </Box>
-                        <Button variant="contained" color="secondary" onClick={() => remove(index)}>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => remove(index)}
+                        >
                           Remove
                         </Button>
                       </Box>
                     ))}
-                    <Button variant="contained" color="primary" onClick={() => push({ input: '', output: '' })}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => push({ input: "", output: "" })}
+                    >
                       Add Test Case
                     </Button>
                   </div>
