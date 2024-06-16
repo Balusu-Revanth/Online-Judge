@@ -86,6 +86,8 @@ const Home = () => {
           headers: { Authorization: token },
         }
       );
+      const data = await response.json();
+      console.log(data);
       if (!response.ok) throw new Error("Failed to delete problem");
       setProblems(problems.filter((problem) => problem.problem_id !== id));
     } catch (error) {
@@ -135,39 +137,37 @@ const Home = () => {
                   boxShadow: 1,
                 }}
               >
+                <Box
+                  sx={{
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingBottom: 1,
+                    color: 'white',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      color: 'primary.main',
+                    },
+                  }}
+                  onClick={() => handleProblemClick(problem.problem_id)}
+                >
+                  <Typography variant="h6">
+                    {problem.title}
+                  </Typography>
+                  {isSolved(problem.problem_id) && <CheckCircleIcon style={{ color: "green", marginLeft: 4 }} />}
+                </Box>
                 <ListItemText
-                primary={
-                  <Box
-                    sx={{
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingBottom: 1,
-                      color: 'white',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        color: 'primary.main',
-                      },
-                    }}
-                    onClick={() => handleProblemClick(problem.problem_id)}
-                  >
-                    <Typography variant="h6">
-                      {problem.title}
-                    </Typography>
-                    {isSolved(problem.problem_id) && <CheckCircleIcon style={{ color: "green", marginLeft: 4 }} />}
-                  </Box>
-                }
-                secondary={
-                  <>
-                    <Chip label={problem.difficulty} color={getDifficultyColor(problem.difficulty)} size="small" sx={{ marginBottom: 1, color: 'white' }} />
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {problem.tags.map((tag, index) => (
-                        <Chip key={index} label={tag} color="secondary" size="small" sx={{ color: 'white' }} />
-                      ))}
-                    </Box>
-                  </>
-                }
-              />
+                  primary={
+                    <>
+                      <Chip label={problem.difficulty} color={getDifficultyColor(problem.difficulty)} size="small" sx={{ marginBottom: 1, color: 'white' }} />
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                        {problem.tags.map((tag, index) => (
+                          <Chip key={index} label={tag} color="secondary" size="small" sx={{ color: 'white' }} />
+                        ))}
+                      </Box>
+                    </>
+                  }
+                />
                 {admin && (
                   <ListItemSecondaryAction>
                     <IconButton

@@ -9,7 +9,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { admin, token } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = React.useState(null);
   const [error, setError] = React.useState("");
@@ -110,9 +110,9 @@ const Navbar = () => {
     <AppBar position="fixed" color="secondary" sx={{ width: '100%', zIndex: 9999 }}>
       <Toolbar>
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <img src="assets/logo/logo.png" alt="Logo" style={{ height: 50, marginRight: 10, cursor: 'pointer' }} onClick={() => navigate('/home')} />
+          <img src={`${process.env.PUBLIC_URL}/assets/logo/logo.png`} alt="Logo" style={{ height: 50, marginRight: 10, cursor: 'pointer' }} onClick={() => navigate('/home')} />
         </Box>
-        <Button color="inherit" style={{ textTransform: 'none' }} onClick={() => navigate('/add-problem')}>Add Problem</Button>
+        {admin && (<Button color="inherit" style={{ textTransform: 'none' }} onClick={() => navigate('/add-problem')}>Add Problem</Button>)}
         <IconButton
           edge="end"
           color="inherit"
