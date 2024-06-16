@@ -1,4 +1,5 @@
 const Problem = require('../../models/Problem');
+const User = require('../../models/User');
 
 const deleteProblem = async (req, res) => {
   const { problem_id } = req.params;
