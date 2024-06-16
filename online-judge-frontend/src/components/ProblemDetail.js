@@ -20,13 +20,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Navbar from "./Navbar";
 import Loading from "./Loading";
 import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
+import { highlight, languages } from "prismjs";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-cpp";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-python";
+import "prismjs/themes/prism-okaidia.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -319,10 +320,13 @@ print(f"The sum of the two numbers is: {sum}")
                 highlight={(code) => highlight(code, languages[language])}
                 padding={10}
                 style={{
-                  fontFamily: '"Fira code", "Fira Mono", monospace',
-                  fontSize: 12,
+                  fontFamily:
+                    'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace',
+                  fontSize: 14,
                   backgroundColor: "#1e1e1e",
                   color: "#ffffff",
+                  border: "1px solid #333",
+                  borderRadius: "4px",
                 }}
               />
             </CodeEditorContainer>
