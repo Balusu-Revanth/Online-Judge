@@ -15,6 +15,7 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { styled } from "@mui/system";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Navbar from "./Navbar";
@@ -69,6 +70,7 @@ const ScrollableBox = styled(Paper)(({ theme }) => ({
 
 const ProblemDetail = () => {
   const { id } = useParams();
+  const theme = useTheme();
   const [problem, setProblem] = useState(null);
   const [solvedProblems, setSolvedProblems] = useState([]);
   const [language, setLanguage] = useState("cpp");
@@ -375,7 +377,15 @@ print(f"The sum of the two numbers is: {sum}")
                 {activeTab === "verdict" && (
                   <Box>
                     <Typography variant="h6">Verdict</Typography>
-                    <pre>{submissionResult?.message}</pre>
+                    <pre
+                      style={{
+                        color: submissionResult?.message === "All test cases passed"
+                          ? theme.palette.success.main
+                          : theme.palette.error.main,
+                      }}
+                    >
+                      {submissionResult?.message}
+                    </pre>
                   </Box>
                 )}
               </TabContent>
