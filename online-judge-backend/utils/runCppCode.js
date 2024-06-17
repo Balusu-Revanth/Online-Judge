@@ -14,12 +14,12 @@ const runCppCode = async (filePath, inputPath) => {
   return new Promise((resolve, reject) => {
     exec(`g++ ${filePath} -o ${outPath}`, (error, stdout, stderr) => {
       if (error) {
-        if (outputPath) fs.unlinkSync(outputPath);
+        if (outPath) fs.unlinkSync(outPath);
         reject(`Compilation error`);
         return;
       }
       if (stderr) {
-        if (outputPath) fs.unlinkSync(outputPath);
+        if (outPath) fs.unlinkSync(outPath);
         reject(`Compilation error`);
         return;
       }

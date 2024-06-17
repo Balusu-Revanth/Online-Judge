@@ -9,3 +9,6 @@ configs/serviceAccountKey.json
 
 # Data
 data/
+
+# Keys
+keys/
