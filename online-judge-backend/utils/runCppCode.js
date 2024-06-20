@@ -14,17 +14,17 @@ const runCppCode = async (filePath, inputPath) => {
   return new Promise((resolve, reject) => {
     exec(`g++ ${filePath} -o ${outPath}`, (error, stdout, stderr) => {
       if (error) {
-        if (outPath) fs.unlinkSync(outPath);
+        if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
         reject(`Compilation error`);
         return;
       }
       if (stderr) {
-        if (outPath) fs.unlinkSync(outPath);
+        if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
         reject(`Compilation error`);
         return;
       }
       exec(`${outPath} < ${inputPath}`, (error, stdout, stderr) => {
-        if (outPath) fs.unlinkSync(outPath);
+        if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
         if (error) {
           reject(`Runtime error`);
           return;

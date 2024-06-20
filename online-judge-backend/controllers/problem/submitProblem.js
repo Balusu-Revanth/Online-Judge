@@ -36,20 +36,20 @@ const submitProblem = async (req, res) => {
           result = await runPythonCode(filePath, inputPath);
         }
       } catch (error) {
-        if (filePath) fs.unlinkSync(filePath);
-        if (inputPath) fs.unlinkSync(inputPath);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
         return res.status(400).json({ message: error });
       }
-      if (inputPath) fs.unlinkSync(inputPath);
+      if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
       if (result !== testCase.output.trim()) {
-        if (filePath) fs.unlinkSync(filePath);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
         return res
           .status(200)
           .json({ message: `Failed at test case ${i + 1}` });
       }
     }
 
-    if (filePath) fs.unlinkSync(filePath);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
     const user = await User.findOne({ uid });
     if (!user.solvedProblems.includes(problem._id)) {
@@ -59,7 +59,7 @@ const submitProblem = async (req, res) => {
 
     res.status(200).json({ message: "All test cases passed" });
   } catch (error) {
-    if (filePath) fs.unlinkSync(filePath);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     res.status(500).json({ message: `Server error: ${error.message}` });
   }
 };
