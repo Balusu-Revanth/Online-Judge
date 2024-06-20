@@ -6,17 +6,14 @@ CodeMasters is an online judge platform where users can sign in, sign up, and so
 
 ## Table of Contents
 
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Demo](#demo)
-- [Logo](#logo)
-- [Installation](#installation)
-  - [Frontend Setup](#frontend-setup)
-  - [Backend Setup](#backend-setup)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [CodeMasters](#codemasters)
+  - [Table of Contents](#table-of-contents)
+  - [Technologies Used](#technologies-used)
+  - [Demo](#demo)
+  - [Installation](#installation)
+    - [Frontend Setup](#frontend-setup)
+    - [Backend Setup](#backend-setup)
+  - [Usage](#usage)
 ## Technologies Used
 
 **Frontend:**
@@ -41,7 +38,7 @@ Check out the demo video [here](https://www.loom.com/share/38949be44e31430ebee48
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/codemasters.git
+    git clone https://github.com/Balusu-Revanth/Online-Judge.git
     cd codemasters/online-judge-frontend
     ```
 
